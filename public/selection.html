@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Select Promotions</title>
   <link rel="stylesheet" href="styles.css"> <!-- Link to CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/> <!-- Choices.js CSS -->
   <script>
     async function loadLocations() {
       const response = await fetch('/locations');
@@ -175,6 +176,7 @@
     <button type="submit">Generate Promotions</button>
   </form>
 
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script> <!-- Choices.js JS -->
   <script>
     // This script should be placed after the main form and before the closing </body> tag.
     // It assumes that `loadLocations` function and its associated elements are already defined above.
@@ -186,13 +188,25 @@
       const promotionTypeSelect = document.getElementById('promotion_type');
       const specificRestaurantsSelect = document.getElementById('specificRestaurants');
       const specificRestaurantsSection = document.getElementById('specificRestaurantsSection');
-      const numberOfAdditionalRestaurantsInput = document.getElementById('numberOfAdditionalRestaurants'); // Added
-      const selectionWarningDiv = document.getElementById('selectionWarning'); // Added
+      const numberOfAdditionalRestaurantsInput = document.getElementById('numberOfAdditionalRestaurants');
+      const selectionWarningDiv = document.getElementById('selectionWarning');
+      
+      let choicesInstance = null; // Declare choicesInstance
+
+      if (specificRestaurantsSelect) {
+        choicesInstance = new Choices(specificRestaurantsSelect, {
+          removeItemButton: true,
+          placeholder: true,
+          placeholderValue: 'Select promotions...',
+          allowHTML: false,
+        });
+      }
 
       // Validation function
       function validateRestaurantSelectionCount() {
         const numToAdd = parseInt(numberOfAdditionalRestaurantsInput.value, 10);
-        const selectedCount = Array.from(specificRestaurantsSelect.selectedOptions).length;
+        // Get selected count from Choices.js instance if available
+        const selectedCount = choicesInstance ? choicesInstance.getValue(true).length : 0;
 
         if (numToAdd > 0 && selectedCount > numToAdd) {
           selectionWarningDiv.textContent = `Warning: You have selected more promotions (${selectedCount}) than specified (${numToAdd}). Please adjust.`;
@@ -235,28 +249,58 @@
           }
           const restaurants = await response.json();
 
-          specificRestaurantsSelect.innerHTML = ''; // Clear existing options
+          if (choicesInstance) {
+            choicesInstance.clearStore(); // Clear current options
 
-          if (restaurants && restaurants.length > 0) {
-            restaurants.forEach(restaurantObj => { // Changed 'restaurantName' to 'restaurantObj'
-              const option = document.createElement('option');
-              option.value = restaurantObj.value;    // Use object's 'value' property
-              option.textContent = restaurantObj.text; // Use object's 'text' property
-              specificRestaurantsSelect.appendChild(option);
-            });
-            specificRestaurantsSection.style.display = 'block'; // Show section
-          } else {
-            // No restaurants found or empty array returned
-            const option = document.createElement('option');
-            option.textContent = 'No restaurants match your criteria';
-            option.disabled = true;
-            specificRestaurantsSelect.appendChild(option);
-            specificRestaurantsSection.style.display = 'block'; // Still show, but with a message
+            if (restaurants && restaurants.length > 0) {
+              const choicesData = restaurants.map(item => ({
+                value: item.value,
+                label: item.text // Map 'text' to 'label' for Choices.js
+              }));
+              choicesInstance.setChoices(choicesData, 'value', 'label', true);
+              choicesInstance.enable();
+              specificRestaurantsSection.style.display = 'block';
+            } else {
+              // No restaurants found or empty array returned
+              // Choices.js handles "no results" or "no choices" message if input is typed into.
+              // We can disable it if it's empty.
+              choicesInstance.disable();
+              // Still show the section to potentially display "No restaurants match" if needed,
+              // or let Choices.js handle its placeholder/empty state.
+              // For consistency with previous behavior of showing the section:
+              specificRestaurantsSection.style.display = 'block'; 
+              // To show a custom message in the dropdown when it's empty and disabled:
+              // choicesInstance.setChoices([{ value: '', label: 'No restaurants match your criteria', disabled: true }], 'value', 'label', true);
+              // However, the placeholder "Select promotions..." might be enough when disabled.
+            }
+          } else { 
+            // Fallback if choicesInstance somehow not initialized (should not happen)
+            specificRestaurantsSelect.innerHTML = ''; 
+            if (restaurants && restaurants.length > 0) {
+                restaurants.forEach(restaurantObj => { 
+                    const option = document.createElement('option');
+                    option.value = restaurantObj.value; 
+                    option.textContent = restaurantObj.text; 
+                    specificRestaurantsSelect.appendChild(option);
+                });
+                specificRestaurantsSection.style.display = 'block';
+            } else {
+                const option = document.createElement('option');
+                option.textContent = 'No restaurants match your criteria';
+                option.disabled = true;
+                specificRestaurantsSelect.appendChild(option);
+                specificRestaurantsSection.style.display = 'block';
+            }
           }
         } catch (error) {
           console.error('Error fetching or parsing available restaurants:', error);
-          specificRestaurantsSelect.innerHTML = ''; // Clear options
-          specificRestaurantsSection.style.display = 'none'; // Hide section
+          if (choicesInstance) {
+            choicesInstance.clearStore();
+            choicesInstance.disable();
+          } else {
+            specificRestaurantsSelect.innerHTML = '';
+          }
+          specificRestaurantsSection.style.display = 'none'; // Hide section on error
         }
       }
 

@@ -63,6 +63,17 @@ app.get('/get-available-restaurants', (req, res) => {
                 return true;
             });
 
+            // Sort alphabetically by the 'text' property
+            uniqueRestaurantSelectionObjects.sort((a, b) => {
+                if (a.text < b.text) {
+                    return -1;
+                }
+                if (a.text > b.text) {
+                    return 1;
+                }
+                return 0;
+            });
+
             res.json(uniqueRestaurantSelectionObjects);
         } catch (e) {
             console.error('Error processing restaurant data:', e);
