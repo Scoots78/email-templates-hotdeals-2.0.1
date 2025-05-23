@@ -46,7 +46,7 @@ app.get('/get-available-restaurants', (req, res) => {
         }
 
         try {
-            const restaurantNames = [...new Set(promotionsData.data.object_list.map(promo => promo[1]))];
+            const restaurantNames = [...new Set(promotionsData.data.object_list.map(promo => promo[0]))];
             res.json(restaurantNames);
         } catch (e) {
             console.error('Error processing restaurant data:', e);
@@ -128,7 +128,7 @@ app.post('/generate-promotions', (req, res) => {
             let listingsToDisplay;
 
             if (chosenRestaurants.length > 0) {
-                const finalPromotions = promotionsData.data.object_list.filter(promo => chosenRestaurants.includes(promo[1]));
+                const finalPromotions = promotionsData.data.object_list.filter(promo => chosenRestaurants.includes(promo[0]));
                 listingsToDisplay = finalPromotions.slice(0, limit);
             } else {
                 listingsToDisplay = promotionsData.data.object_list.sort(() => 0.5 - Math.random()).slice(0, limit);
