@@ -35,6 +35,26 @@ Object.keys(locationsData).forEach(regionKey => {
     });
 });
 
+// New GET endpoint to fetch available restaurant names
+app.get('/get-available-restaurants', (req, res) => {
+    const { region, city, suburb, promotion_type } = req.query;
+
+    fetchPromotions(region, city, suburb, promotion_type, (promotionsData) => {
+        if (!promotionsData || !promotionsData.data || !promotionsData.data.object_list) {
+            // Send an empty array or an error message if data is not available
+            return res.status(500).json({ error: 'Could not fetch restaurant data or data is empty.' });
+        }
+
+        try {
+            const restaurantNames = [...new Set(promotionsData.data.object_list.map(promo => promo[1]))];
+            res.json(restaurantNames);
+        } catch (e) {
+            console.error('Error processing restaurant data:', e);
+            res.status(500).json({ error: 'Error processing restaurant data.' });
+        }
+    });
+});
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/selection.html'));
 });
@@ -57,7 +77,12 @@ function fetchPromotions(region, city, suburb, promotionType, callback) {
 }
 
 app.post('/generate-promotions', (req, res) => {
-    const { region, city, suburb, promotion_type, featuredRestaurantName, featuredRestaurantDescription, featuredRestaurantImage, featuredRestaurantHeading, featuredRestaurantSubHeader, emailBodyIcon, additionalRestaurantsTitle, numberOfAdditionalRestaurants, widthOfIcon, featuredRestaurantUrl, featuredImagePadding } = req.body;
+    const { region, city, suburb, promotion_type, featuredRestaurantName, featuredRestaurantDescription, featuredRestaurantImage, featuredRestaurantHeading, featuredRestaurantSubHeader, emailBodyIcon, additionalRestaurantsTitle, numberOfAdditionalRestaurants, widthOfIcon, featuredRestaurantUrl, featuredImagePadding, specific_restaurants } = req.body;
+
+    let chosenRestaurants = [];
+    if (specific_restaurants) {
+        chosenRestaurants = Array.isArray(specific_restaurants) ? specific_restaurants : [specific_restaurants];
+    }
 
     let fileNameParts = [];
     if (featuredRestaurantName) fileNameParts.push(featuredRestaurantName.replace(/\s+/g, '_'));
@@ -100,11 +125,18 @@ app.post('/generate-promotions', (req, res) => {
                                //console.log("Template content preview:", template.slice(0, 500)); // Print first 500 chars for a preview
 
             const limit = parseInt(numberOfAdditionalRestaurants) || 15;
-            const shuffledPromotions = promotionsData.data.object_list.sort(() => 0.5 - Math.random()).slice(0, limit);
+            let listingsToDisplay;
+
+            if (chosenRestaurants.length > 0) {
+                const finalPromotions = promotionsData.data.object_list.filter(promo => chosenRestaurants.includes(promo[1]));
+                listingsToDisplay = finalPromotions.slice(0, limit);
+            } else {
+                listingsToDisplay = promotionsData.data.object_list.sort(() => 0.5 - Math.random()).slice(0, limit);
+            }
 
             let listings = '<table class="row-content stack listing" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width: 640px; margin: 0 auto;" width="640"><tbody>';
             
-            shuffledPromotions.forEach((promo, index) => {
+            listingsToDisplay.forEach((promo, index) => {
                 if (index % 3 === 0) {
                     listings += '<tr>';
                 }
@@ -141,7 +173,7 @@ app.post('/generate-promotions', (req, res) => {
                 </td>
                 `;
 
-                if (index % 3 === 2 || index === shuffledPromotions.length - 1) {
+                if (index % 3 === 2 || index === listingsToDisplay.length - 1) {
                     listings += '</tr>';
                 }
             });

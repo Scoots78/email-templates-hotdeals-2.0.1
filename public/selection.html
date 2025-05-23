@@ -162,5 +162,97 @@
 
     <button type="submit">Generate Promotions</button>
   </form>
+
+  <!-- New section for specific restaurants -->
+  <div id="specificRestaurantsSection" style="display: none; margin-top: 15px;">
+    <label for="specificRestaurants">Select Specific Restaurants (Optional):</label>
+    <select name="specific_restaurants" id="specificRestaurants" multiple style="width: 100%; min-height: 100px; border: 1px solid #ccc; padding: 5px; border-radius: 4px;">
+        <!-- Options will be populated by JavaScript -->
+    </select>
+    <small>Hold Ctrl/Cmd to select multiple restaurants.</small>
+  </div>
+  <!-- End of new section -->
+
+  <script>
+    // This script should be placed after the main form and before the closing </body> tag.
+    // It assumes that `loadLocations` function and its associated elements are already defined above.
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const regionSelect = document.getElementById('region');
+      const citySelect = document.getElementById('city');
+      const suburbSelect = document.getElementById('suburb');
+      const promotionTypeSelect = document.getElementById('promotion_type');
+      const specificRestaurantsSelect = document.getElementById('specificRestaurants');
+      const specificRestaurantsSection = document.getElementById('specificRestaurantsSection');
+
+      async function fetchAvailableRestaurants() {
+        const region = regionSelect.value || '';
+        const city = citySelect.value || '';
+        const suburb = suburbSelect.value || '';
+        const promotion_type = promotionTypeSelect.value || '';
+
+        // Only proceed if at least one filter is selected, or adjust as needed
+        // For instance, you might always want to fetch if promotion_type is selected, etc.
+        // if (!region && !city && !suburb && !promotion_type) {
+        //   specificRestaurantsSelect.innerHTML = ''; // Clear options
+        //   specificRestaurantsSection.style.display = 'none'; // Hide section
+        //   return;
+        // }
+
+        const queryParams = new URLSearchParams({
+          region,
+          city,
+          suburb,
+          promotion_type
+        }).toString();
+        
+        try {
+          const response = await fetch(`/get-available-restaurants?${queryParams}`);
+          if (!response.ok) {
+            // Handle HTTP errors like 500
+            console.error('Failed to fetch available restaurants, status:', response.status);
+            specificRestaurantsSelect.innerHTML = ''; // Clear options
+            specificRestaurantsSection.style.display = 'none'; // Hide section
+            return;
+          }
+          const restaurants = await response.json();
+
+          specificRestaurantsSelect.innerHTML = ''; // Clear existing options
+
+          if (restaurants && restaurants.length > 0) {
+            restaurants.forEach(restaurantName => {
+              const option = document.createElement('option');
+              option.value = restaurantName; // Or an ID if available and preferred
+              option.textContent = restaurantName;
+              specificRestaurantsSelect.appendChild(option);
+            });
+            specificRestaurantsSection.style.display = 'block'; // Show section
+          } else {
+            // No restaurants found or empty array returned
+            const option = document.createElement('option');
+            option.textContent = 'No restaurants match your criteria';
+            option.disabled = true;
+            specificRestaurantsSelect.appendChild(option);
+            specificRestaurantsSection.style.display = 'block'; // Still show, but with a message
+          }
+        } catch (error) {
+          console.error('Error fetching or parsing available restaurants:', error);
+          specificRestaurantsSelect.innerHTML = ''; // Clear options
+          specificRestaurantsSection.style.display = 'none'; // Hide section
+        }
+      }
+
+      // Add event listeners to existing dropdowns
+      regionSelect.addEventListener('change', fetchAvailableRestaurants);
+      citySelect.addEventListener('change', fetchAvailableRestaurants);
+      suburbSelect.addEventListener('change', fetchAvailableRestaurants);
+      promotionTypeSelect.addEventListener('change', fetchAvailableRestaurants);
+
+      // Initial call to populate based on any pre-selected values (e.g., if form remembers last state)
+      // Or if there are default selections that should trigger restaurant loading.
+      // If no default selections that should trigger this, this initial call can be removed.
+      fetchAvailableRestaurants(); 
+    });
+  </script>
 </body>
 </html>
