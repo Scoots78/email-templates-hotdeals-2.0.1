@@ -220,10 +220,10 @@
           specificRestaurantsSelect.innerHTML = ''; // Clear existing options
 
           if (restaurants && restaurants.length > 0) {
-            restaurants.forEach(restaurantName => {
+            restaurants.forEach(restaurantObj => { // Changed 'restaurantName' to 'restaurantObj'
               const option = document.createElement('option');
-              option.value = restaurantName; // Or an ID if available and preferred
-              option.textContent = restaurantName;
+              option.value = restaurantObj.value;    // Use object's 'value' property
+              option.textContent = restaurantObj.text; // Use object's 'text' property
               specificRestaurantsSelect.appendChild(option);
             });
             specificRestaurantsSection.style.display = 'block'; // Show section
