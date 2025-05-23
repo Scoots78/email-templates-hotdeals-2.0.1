@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Promotions</title>
+  <link rel="stylesheet" href="styles.css"> <!-- Link to CSS -->
+  <script>
+    async function loadLocations() {
+      const response = await fetch('/locations');
+      const locations = await response.json();
+
+      const regionSelect = document.getElementById('region');
+      const citySelect = document.getElementById('city');
+      const suburbSelect = document.getElementById('suburb');
+
+      // Placeholder for regions
+      regionSelect.innerHTML = `<option value="">Select a region if required</option>`;
+      citySelect.innerHTML = `<option value="">Select a city if required</option>`;
+      suburbSelect.innerHTML = `<option value="">Select a suburb if required</option>`;
+
+      // Populate regions
+      for (const regionKey in locations) {
+        const region = locations[regionKey];
+        const option = document.createElement('option');
+        option.value = regionKey;
+        option.textContent = region.name;
+        regionSelect.appendChild(option);
+      }
+
+      // Populate cities on region change
+      regionSelect.addEventListener('change', function () {
+        const selectedRegion = this.value;
+        if (selectedRegion) {
+          const cities = locations[selectedRegion].cities;
+          populateCities(cities);
+        } else {
+          citySelect.innerHTML = `<option value="">Select a city if required</option>`;
+          suburbSelect.innerHTML = `<option value="">Select a suburb if required</option>`;
+        }
+      });
+
+      // Populate cities and suburbs
+      function populateCities(cities) {
+        citySelect.innerHTML = `<option value="">Select a city if required</option>`;
+        suburbSelect.innerHTML = `<option value="">Select a suburb if required</option>`;
+
+        for (const cityKey in cities) {
+          const city = cities[cityKey];
+          const option = document.createElement('option');
+          option.value = cityKey;
+          option.textContent = city.name;
+          citySelect.appendChild(option);
+        }
+
+        citySelect.addEventListener('change', function () {
+          const selectedCity = this.value;
+          if (selectedCity) {
+            const suburbs = cities[selectedCity].suburbs;
+            populateSuburbs(suburbs);
+          } else {
+            suburbSelect.innerHTML = `<option value="">Select a suburb if required</option>`;
+          }
+        });
+      }
+
+      // Populate suburbs
+      function populateSuburbs(suburbs) {
+        suburbSelect.innerHTML = `<option value="">Select a suburb if required</option>`;
+
+        for (const suburbKey in suburbs) {
+          const suburb = suburbs[suburbKey];
+          const option = document.createElement('option');
+          option.value = suburbKey;
+          option.textContent = suburb.name;
+          suburbSelect.appendChild(option);
+        }
+      }
+    }
+
+    window.onload = loadLocations;
+  </script>
+</head>
+<body>
+  <h1>Select Your Region, City, and Promotion Type</h1>
+
+  <form action="/generate-promotions" method="POST">
+    <label for="region">Select Region:</label>
+    <select id="region" name="region">
+      <option value="">Select a region if required</option>
+    </select>
+    <br>
+
+    <label for="city">Select City:</label>
+    <select id="city" name="city">
+      <option value="">Select a city if required</option>
+    </select>
+    <br>
+
+    <label for="suburb">Select Suburb:</label>
+    <select id="suburb" name="suburb">
+      <option value="">Select a suburb if required</option>
+    </select>
+    <br>
+
+    <label for="promotion_type">Select Promotion Type:</label>
+    <select id="promotion_type" name="promotion_type">
+      <option value="SPECIAL_HD">Hot Deal</option>
+      <option value="DISCOUNT">Discount</option>
+      <option value="">Any Promotion Type</option> <!-- Allow blank/empty option -->
+    </select>
+    <br>
+
+    <!-- Additional Fields -->
+    <label for="featuredRestaurantName">Featured Restaurant Name:</label>
+    <input type="text" id="featuredRestaurantName" name="featuredRestaurantName">
+    <br>
+
+    <label for="featuredRestaurantDescription">Featured Restaurant Description:</label>
+    <textarea id="featuredRestaurantDescription" name="featuredRestaurantDescription"></textarea>
+    <br>
+
+    <label for="featuredRestaurantImage">Featured Restaurant Image:</label>
+    <input type="text" id="featuredRestaurantImage" name="featuredRestaurantImage">
+    <br>
+
+    <label for="featuredRestaurantHeading">Heading:</label>
+    <input type="text" id="featuredRestaurantHeading" name="featuredRestaurantHeading">
+    <br>
+
+    <label for="featuredRestaurantSubHeader">Sub Heading:</label>
+    <input type="text" id="featuredRestaurantSubHeader" name="featuredRestaurantSubHeader">
+    <br>
+
+    <label for="featuredRestaurantUrl">Featured Restaurant URL:</label>
+    <input type="text" id="featuredRestaurantUrl" name="featuredRestaurantUrl" placeholder="Enter URL">
+    <br>
+
+    <label for="featuredImagePadding">Featured Image Padding:</label>
+      <select id="featuredImagePadding" name="featuredImagePadding">
+        <option value="0" selected>0</option>
+        <option value="20">20</option>
+      </select>
+    <br>
+
+
+    <label for="additionalRestaurantsTitle">Additional Restaurant Title:</label>
+    <input type="text" id="additionalRestaurantsTitle" name="additionalRestaurantsTitle">
+    <br>
+
+    <label for="numberOfAdditionalRestaurants">Number of Additional Restaurants:</label>
+    <input type="number" id="numberOfAdditionalRestaurants" name="numberOfAdditionalRestaurants" min="1">
+    <br>
+
+    <label for="emailBodyIcon">Icon:</label>
+    <input type="text" id="emailBodyIcon" name="emailBodyIcon" value="https://emailtemplates.hosting.eveve.co.nz/moosend/images/fire.png">
+    <br>
+
+    <label for="widthOfIcon">Icon width (px):</label>
+    <input type="text" id="widthOfIcon" name="widthOfIcon" value="72px">
+    <br>
+
+    <button type="submit">Generate Promotions</button>
+  </form>
+</body>
+</html>

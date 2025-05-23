@@ -1,0 +1,235 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"consol",
+				"console.log"
+			],
+			[
+				"con",
+				"console"
+			],
+			[
+				"font-",
+				"font-style"
+			],
+			[
+				"background",
+				"background-color"
+			],
+			[
+				"back",
+				"background-size"
+			],
+			[
+				"in",
+				"inline-block"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"install package control",
+				"Package Control: Install Package"
+			],
+			[
+				"package control",
+				"Package Control: Install Package"
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				" instal",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 477.0,
+		"history":
+		[
+			"node app.js"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/D/App/emailcreate/public/selection.html",
+		"/D/App/emailcreate/public/otago-region_SPECIAL_HD.html",
+		"/D/App/emailcreate/generatePromotions.js",
+		"/D/App/emailcreate/data/locations.json",
+		"/D/App/emailcreate/template.html",
+		"/D/App/emailcreate/app.js",
+		"/D/App/emailcreate/app141024.js",
+		"/D/App/emailcreate/public/promotions.html",
+		"/D/App/emailcreate/public/generate.js",
+		"/D/App/emailcreate/public/auckland-region_SPECIAL_HD.html",
+		"/D/App/emailcreate/public/otago-region_queenstown-lakes-district_SPECIAL_HD_undefined.html",
+		"/D/App/emailcreate/public/styles.css",
+		"/D/App/emailcreate/data/bookable-list.json",
+		"/D/App/emailcreate/public/generatePromotions3.js",
+		"/D/App/emailcreate/generatePromotions3.js",
+		"/D/App/emailcreate/selection.html",
+		"/C/Users/IT/AppData/Roaming/Sublime Text/Packages/User/Nodejs.sublime-settings",
+		"/C/Users/IT/AppData/Roaming/Sublime Text/Packages/Nodejs/Nodejs.sublime-settings",
+		"/D/App/emailcreate/generatePromotions2.js",
+		"/?192.168.1.219/rh/rh2/src/rh2/static/site.css",
+		"/H/Shared drives/Web Development/WebDev/Eveve_Custom_CSS/HTTPS 2019 Events/manu.css",
+		"/C/Users/IT/Downloads/nR6QaocWkusQ-multiple-addresses-for-woocommerce-pro-by-themehigh-19-1682075446/woocommerce-multiple-addresses-pro/woocommerce-multiple-addresses-pro.php",
+		"/C/Users/IT/Downloads/nR6QaocWkusQ-multiple-addresses-for-woocommerce-pro-by-themehigh-19-1682075446/woocommerce-multiple-addresses-pro/class-thwma-license-manager.php",
+		"/C/Users/IT/Downloads/lone-star-fonts/lone-star-fonts/knockout-54-webfont.woff2",
+		"/?192.168.1.219/rh/rh2/src/rh2/static/js/site-0.js",
+		"/?192.168.1.219/rh/rh2/src/rh2/static/js/site-0-calendar.js",
+		"/?192.168.1.219/rh/rh2/src/rh2/static/js/site-1-home.js",
+		"/?192.168.1.219/rh/rh2/src/rh2/static/js/site-0-business-card.js"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 101.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 39.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/Nodejs/Nodejs.sublime-build",
+	"project": "New Text Document.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 547.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
