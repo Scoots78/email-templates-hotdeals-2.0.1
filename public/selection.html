@@ -148,10 +148,6 @@
     <input type="text" id="additionalRestaurantsTitle" name="additionalRestaurantsTitle">
     <br>
 
-    <label for="numberOfAdditionalRestaurants">Number of Additional Restaurants:</label>
-    <input type="number" id="numberOfAdditionalRestaurants" name="numberOfAdditionalRestaurants" min="1">
-    <br>
-
     <label for="emailBodyIcon">Icon:</label>
     <input type="text" id="emailBodyIcon" name="emailBodyIcon" value="https://emailtemplates.hosting.eveve.co.nz/moosend/images/fire.png">
     <br>
@@ -160,18 +156,24 @@
     <input type="text" id="widthOfIcon" name="widthOfIcon" value="72px">
     <br>
 
+    <!-- Moved numberOfAdditionalRestaurants here, before the submit button -->
+    <label for="numberOfAdditionalRestaurants">Number of Additional Restaurants:</label>
+    <input type="number" id="numberOfAdditionalRestaurants" name="numberOfAdditionalRestaurants" min="1">
+    <br>
+
+    <!-- specificRestaurantsSection moved inside the form, after numberOfAdditionalRestaurants and before the submit button -->
+    <div id="specificRestaurantsSection" style="display: none; margin-top: 15px;">
+      <label for="specificRestaurants">Select Specific Restaurants (Optional):</label>
+      <select name="specific_restaurants" id="specificRestaurants" multiple style="width: 100%; min-height: 100px; border: 1px solid #ccc; padding: 5px; border-radius: 4px;">
+          <!-- Options will be populated by JavaScript -->
+      </select>
+      <small>Hold Ctrl/Cmd to select multiple restaurants.</small>
+      <div id="selectionWarning" style="color: red; display: none; margin-top: 5px;"></div> <!-- New warning message area -->
+    </div>
+    <!-- End of specificRestaurantsSection -->
+
     <button type="submit">Generate Promotions</button>
   </form>
-
-  <!-- New section for specific restaurants -->
-  <div id="specificRestaurantsSection" style="display: none; margin-top: 15px;">
-    <label for="specificRestaurants">Select Specific Restaurants (Optional):</label>
-    <select name="specific_restaurants" id="specificRestaurants" multiple style="width: 100%; min-height: 100px; border: 1px solid #ccc; padding: 5px; border-radius: 4px;">
-        <!-- Options will be populated by JavaScript -->
-    </select>
-    <small>Hold Ctrl/Cmd to select multiple restaurants.</small>
-  </div>
-  <!-- End of new section -->
 
   <script>
     // This script should be placed after the main form and before the closing </body> tag.
@@ -184,6 +186,22 @@
       const promotionTypeSelect = document.getElementById('promotion_type');
       const specificRestaurantsSelect = document.getElementById('specificRestaurants');
       const specificRestaurantsSection = document.getElementById('specificRestaurantsSection');
+      const numberOfAdditionalRestaurantsInput = document.getElementById('numberOfAdditionalRestaurants'); // Added
+      const selectionWarningDiv = document.getElementById('selectionWarning'); // Added
+
+      // Validation function
+      function validateRestaurantSelectionCount() {
+        const numToAdd = parseInt(numberOfAdditionalRestaurantsInput.value, 10);
+        const selectedCount = Array.from(specificRestaurantsSelect.selectedOptions).length;
+
+        if (numToAdd > 0 && selectedCount > numToAdd) {
+          selectionWarningDiv.textContent = `Warning: You have selected more promotions (${selectedCount}) than specified (${numToAdd}). Please adjust.`;
+          selectionWarningDiv.style.display = 'block';
+        } else {
+          selectionWarningDiv.textContent = '';
+          selectionWarningDiv.style.display = 'none';
+        }
+      }
 
       async function fetchAvailableRestaurants() {
         const region = regionSelect.value || '';
@@ -251,7 +269,14 @@
       // Initial call to populate based on any pre-selected values (e.g., if form remembers last state)
       // Or if there are default selections that should trigger restaurant loading.
       // If no default selections that should trigger this, this initial call can be removed.
-      fetchAvailableRestaurants(); 
+      fetchAvailableRestaurants();
+
+      // Add event listeners for validation
+      specificRestaurantsSelect.addEventListener('change', validateRestaurantSelectionCount);
+      numberOfAdditionalRestaurantsInput.addEventListener('input', validateRestaurantSelectionCount);
+
+      // Initial validation check
+      validateRestaurantSelectionCount();
     });
   </script>
 </body>

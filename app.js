@@ -142,23 +142,52 @@ app.post('/generate-promotions', (req, res) => {
                                .replace(/{{featuredImagePadding}}/g, featuredImagePadding || '0');
                                //console.log("Template content preview:", template.slice(0, 500)); // Print first 500 chars for a preview
 
-            const limit = parseInt(numberOfAdditionalRestaurants) || 15;
-            let listingsToDisplay;
-            let finalPromotions;
+            const allMatchingPromotions = (promotionsData && promotionsData.data && promotionsData.data.object_list) ? promotionsData.data.object_list : [];
 
-            if (selectedCompositeKeys.length > 0) {
-                finalPromotions = promotionsData.data.object_list.filter(promo => {
+            let userSelectedPromotions = [];
+            if (selectedCompositeKeys && selectedCompositeKeys.length > 0 && allMatchingPromotions.length > 0) {
+                userSelectedPromotions = allMatchingPromotions.filter(promo => {
                     if (promo && typeof promo[8] === 'string' && typeof promo[1] === 'string') {
                         const currentPromoKey = promo[8] + "::" + promo[1];
                         return selectedCompositeKeys.includes(currentPromoKey);
                     }
-                    return false; // Skip if promo[8] or promo[1] is not valid
+                    return false;
                 });
-            } else {
-                // Fallback to random selection
-                finalPromotions = promotionsData.data.object_list.sort(() => 0.5 - Math.random());
             }
-            listingsToDisplay = finalPromotions.slice(0, limit);
+
+            const desiredTotal = parseInt(numberOfAdditionalRestaurants) || 15;
+            let listingsToDisplay = [...userSelectedPromotions];
+
+            if (listingsToDisplay.length < desiredTotal && allMatchingPromotions.length > 0) {
+                const numRandomNeeded = desiredTotal - listingsToDisplay.length;
+                
+                const userSelectedKeysForExclusion = new Set(userSelectedPromotions.map(p => {
+                    if (p && typeof p[8] === 'string' && typeof p[1] === 'string') {
+                        return p[8] + "::" + p[1];
+                    }
+                    return null; // Should not happen if userSelectedPromotions are filtered correctly
+                }).filter(key => key !== null));
+
+                let potentialRandomPromotions = allMatchingPromotions.filter(promo => {
+                    if (promo && typeof promo[8] === 'string' && typeof promo[1] === 'string') {
+                        const currentPromoKey = promo[8] + "::" + promo[1];
+                        return !userSelectedKeysForExclusion.has(currentPromoKey);
+                    }
+                    return false;
+                });
+
+                potentialRandomPromotions.sort(() => 0.5 - Math.random()); // Shuffle
+                listingsToDisplay.push(...potentialRandomPromotions.slice(0, numRandomNeeded));
+            }
+             // Ensure we don't exceed desiredTotal if userSelectedPromotions itself was > desiredTotal
+            if (listingsToDisplay.length > desiredTotal && userSelectedPromotions.length >= desiredTotal) {
+                // This case means user selected more than or equal to desiredTotal.
+                // listingsToDisplay currently IS userSelectedPromotions. No slice needed, show all selected.
+            } else if (listingsToDisplay.length > desiredTotal) {
+                // This case means random additions pushed it over. Trim to desiredTotal.
+                listingsToDisplay = listingsToDisplay.slice(0, desiredTotal);
+            }
+
 
             let listings = '<table class="row-content stack listing" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width: 640px; margin: 0 auto;" width="640"><tbody>';
             
